@@ -38,5 +38,48 @@ public class Interpreter {
             return maxargs(((LastExpList)expList).head);
     }
 
+    Table interpStm(Stm s, Table t) {
+        // TODO
+        return null;
+    }
+
+    IntAndTable interpExp(Exp e, Table t) {
+        // TODO
+        return null;
+    }
+
 }
+
+class Table {
+
+    String id; int value; Table tail;
+
+    Table(String i, int v, Table t) {
+        id = i;
+        value = v;
+        tail = t;
+    }
+
+    int lookup(String key) {
+        // TODO
+        return 0;
+    }
+
+    Table update(String id, int value) {
+        return new Table(id, value, this);
+    }
+
+}
+
+class IntAndTable {
+
+    int i;
+
+    Table t; IntAndTable(int ii, Table tt) {
+        i=ii;
+        t=tt;
+    }
+
+}
+
 
