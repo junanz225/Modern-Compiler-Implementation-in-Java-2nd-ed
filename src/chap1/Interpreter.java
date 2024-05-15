@@ -6,8 +6,8 @@ public class Interpreter {
         if (s instanceof CompoundStm compoundStm) {
             return Math.max(maxargs(compoundStm.stm1), maxargs(compoundStm.stm2));
         }
-        else if (s instanceof AssignStm) {
-            return maxargs(((AssignStm)s).exp);
+        else if (s instanceof AssignStm assignStm) {
+            return maxargs(assignStm.exp);
         }
         else { // it has to be a PrintStm then
             PrintStm printStm = (PrintStm)s;
