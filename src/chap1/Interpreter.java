@@ -62,7 +62,6 @@ class Table {
 
     int lookup(String key) {
         // TODO
-
         return 0;
     }
 
