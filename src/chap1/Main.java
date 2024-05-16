@@ -7,7 +7,7 @@ public class Main {
         Interpreter interpreter = new Interpreter();
         int result = interpreter.maxargs(program.prog);
         System.out.println("maxargs(prog) is " + result);
+        interpreter.interpStm(program.prog, new Table());
     }
 
 }
-

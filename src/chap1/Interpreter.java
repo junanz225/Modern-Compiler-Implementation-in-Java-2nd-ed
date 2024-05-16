@@ -1,5 +1,7 @@
 package chap1;
 
+import static chap1.OpExp.*;
+
 public class Interpreter {
 
     int maxargs(Stm s) {
@@ -43,28 +45,52 @@ public class Interpreter {
             Table currentTable = t;
             while (expList instanceof PairExpList pairExpList) {
                 IntAndTable intAndTable = interpExp(pairExpList.head, currentTable);
-                System.out.print(intAndTable.i + " ");
+                System.out.println(intAndTable.i);
                 expList = pairExpList.tail;
                 currentTable = intAndTable.t;
             }
             LastExpList lastExpList = (LastExpList)expList;
-            IntAndTable intAndTable = interpExp(lastExpList.head, currentTable);
-            System.out.print(intAndTable.i);
-            return intAndTable.t;
+            IntAndTable result = interpExp(lastExpList.head, currentTable);
+            System.out.println(result.i);
+            return result.t;
         }
-        // TODO
-        return null;
+        else if (s instanceof AssignStm assignStm) {
+            IntAndTable result = interpExp(assignStm.exp, t);
+            return result.t.update(assignStm.id, result.i);
+        }
+        else if (s instanceof CompoundStm compoundStm) {
+            Table currentTable = interpStm(compoundStm.stm1, t);
+            return interpStm(compoundStm.stm2, currentTable);
+        }
+        // shouldn't reach here unless something goes wrong
+        throw new RuntimeException("interpStm malfunctioning with Stm " + s + " and Table " + t);
     }
 
     IntAndTable interpExp(Exp e, Table t) {
         if (e instanceof IdExp idExp) {
             return new IntAndTable( t.lookup(idExp.id), t);
         }
-        if (e instanceof NumExp numExp) {
+        else if (e instanceof NumExp numExp) {
             return new IntAndTable(numExp.num, t);
         }
-        // TODO
-        return null;
+        else if (e instanceof OpExp opExp) {
+            IntAndTable leftSide = interpExp(opExp.left, t);
+            IntAndTable rightSide = interpExp(opExp.right, leftSide.t);
+            return switch (opExp.oper) {
+                case Plus -> new IntAndTable(leftSide.i + rightSide.i, rightSide.t);
+                case Minus -> new IntAndTable(leftSide.i - rightSide.i, rightSide.t);
+                case Times -> new IntAndTable(leftSide.i * rightSide.i, rightSide.t);
+                case Div -> new IntAndTable(leftSide.i / rightSide.i, rightSide.t);
+                // shouldn't reach here unless something goes wrong
+                default ->  throw new RuntimeException("Unsupported operator " + opExp.oper);
+            };
+        }
+        else if (e instanceof EseqExp eseqExp) {
+            Table currentTable = interpStm(eseqExp.stm, t);
+            return interpExp(eseqExp.exp, currentTable);
+        }
+        // shouldn't reach here unless something goes wrong
+        throw new RuntimeException("interpExp malfunctioning with Exp " + e + " and Table " + t);
     }
 
 }
@@ -74,6 +100,10 @@ class Table {
     String id;
     int value;
     Table tail;
+
+    Table() {
+
+    }
 
     Table(String i, int v, Table t) {
         id = i;
@@ -110,5 +140,3 @@ class IntAndTable {
     }
 
 }
-
-

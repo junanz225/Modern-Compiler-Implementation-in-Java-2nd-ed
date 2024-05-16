@@ -13,4 +13,3 @@ public class Program {
                             new PrintStm(new LastExpList(new IdExp("b")))));
 
 }
-
