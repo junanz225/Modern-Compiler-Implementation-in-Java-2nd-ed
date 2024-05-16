@@ -13,7 +13,7 @@ public class Interpreter {
         }
         else { // it has to be a PrintStm then
             PrintStm printStm = (PrintStm)s;
-            return Math.max(printStm.exps.size(), maxargs(printStm.exps));
+            return Math.max(printStm.exps.topLevelExpCount(), maxargs(printStm.exps));
         }
     }
 

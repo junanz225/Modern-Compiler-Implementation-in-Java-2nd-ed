@@ -85,7 +85,7 @@ class EseqExp extends Exp {
 
 abstract class ExpList {
 
-    abstract int size();
+    abstract int topLevelExpCount();
 
 }
 
@@ -99,8 +99,8 @@ class PairExpList extends ExpList {
         tail=t;
     }
 
-    public int size() {
-        return 1 + tail.size();
+    public int topLevelExpCount() {
+        return 1 + tail.topLevelExpCount();
     }
 
 }
@@ -113,7 +113,7 @@ class LastExpList extends ExpList {
         head=h;
     }
 
-    public int size() {
+    public int topLevelExpCount() {
         return 1;
     }
 
