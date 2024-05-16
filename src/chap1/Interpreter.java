@@ -13,7 +13,6 @@ public class Interpreter {
             PrintStm printStm = (PrintStm)s;
             return Math.max(printStm.exps.size(), maxargs(printStm.exps));
         }
-
     }
 
     int maxargs(Exp exp) {
@@ -39,11 +38,31 @@ public class Interpreter {
     }
 
     Table interpStm(Stm s, Table t) {
+        if (s instanceof PrintStm printStm) {
+            ExpList expList = printStm.exps;
+            Table currentTable = t;
+            while (expList instanceof PairExpList pairExpList) {
+                IntAndTable intAndTable = interpExp(pairExpList.head, currentTable);
+                System.out.print(intAndTable.i + " ");
+                expList = pairExpList.tail;
+                currentTable = intAndTable.t;
+            }
+            LastExpList lastExpList = (LastExpList)expList;
+            IntAndTable intAndTable = interpExp(lastExpList.head, currentTable);
+            System.out.print(intAndTable.i);
+            return intAndTable.t;
+        }
         // TODO
         return null;
     }
 
     IntAndTable interpExp(Exp e, Table t) {
+        if (e instanceof IdExp idExp) {
+            return new IntAndTable( t.lookup(idExp.id), t);
+        }
+        if (e instanceof NumExp numExp) {
+            return new IntAndTable(numExp.num, t);
+        }
         // TODO
         return null;
     }
@@ -52,7 +71,9 @@ public class Interpreter {
 
 class Table {
 
-    String id; int value; Table tail;
+    String id;
+    int value;
+    Table tail;
 
     Table(String i, int v, Table t) {
         id = i;
@@ -61,8 +82,15 @@ class Table {
     }
 
     int lookup(String key) {
-        // TODO
-        return 0;
+        if ( id.equals(key) ) {
+            return value;
+        }
+        else if ( tail != null) {
+            return tail.lookup(key);
+        }
+        else {
+            throw new RuntimeException("Key " + key + " is not defined" );
+        }
     }
 
     Table update(String id, int value) {
@@ -74,8 +102,9 @@ class Table {
 class IntAndTable {
 
     int i;
+    Table t;
 
-    Table t; IntAndTable(int ii, Table tt) {
+    IntAndTable(int ii, Table tt) {
         i=ii;
         t=tt;
     }
