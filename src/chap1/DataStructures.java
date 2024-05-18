@@ -60,18 +60,15 @@ class Tree {
         right = r;
     }
 
-    Tree insert(String key, Object binding, Tree t) {
-        if ( t == null ) {
-            return new Tree(null, key, binding, null);
+    Tree insert(String key, Object binding) {
+        if ( key.compareTo(this.key) < 0 ) {
+            return new Tree(left.insert(key, binding), this.key, value, right);
         }
-        else if ( key.compareTo(t.key) < 0 ) {
-            return new Tree(insert(key, binding, t.left), t.key, t.value, t.right);
-        }
-        else if ( key.compareTo(t.key) > 0 ) {
-            return new Tree(t.left, t.key, t.value, insert(key, binding, t.right));
+        else if ( key.compareTo(this.key) > 0 ) {
+            return new Tree(left, this.key, value, right.insert(key, binding));
         }
         else {
-            return new Tree(t.left, key, binding, t.right);
+            return new Tree(left, key, binding, right);
         }
     }
 
@@ -80,13 +77,13 @@ class Tree {
             return false;
         }
         if ( key.compareTo(this.key) < 0) {
-            return this.left != null && this.left.member(key);
+            return left != null && left.member(key);
         }
         else if ( key.compareTo(this.key) == 0 ) {
             return true;
         }
         else { // it has to be key.compareTo(this.key) > 0
-            return this.right != null && this.right.member(key);
+            return right != null && right.member(key);
         }
     }
 
@@ -95,28 +92,40 @@ class Tree {
             return null;
         }
         if ( key.compareTo(this.key) < 0) {
-            return lookup(key, this.left);
+            return lookup(key, left);
         }
         else if ( key.compareTo(this.key) == 0 ) {
-            return this.value;
+            return value;
         }
         else { // it has to be key.compareTo(this.key) > 0
-            return lookup(key, this.right);
+            return lookup(key, right);
         }
     }
 
-//    @Override
-//    public String toString() {
-//        StringBuilder sb = new StringBuilder();
-//        if (this.left != null) {
-//            sb.append(left.toString()).append(" ");
-//        }
-//        String entry = "(" + this.key + ", " + this.value + ")";
-//        sb.append(entry);
-//        if (this.right != null) {
-//            sb.append(right.toString()).append(" ");
-//        }
-//        return sb.toString();
-//    }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if ( !(left instanceof EmptyTree) ) {
+            sb.append("{ Left: ").append(left.toString()).append(" ");
+        }
+        String entry = " (" + this.key + ", " + this.value + ") ";
+        sb.append(entry);
+        if ( !(right instanceof EmptyTree) ) {
+            sb.append("Right: ").append(right.toString()).append(" }");
+        }
+        return sb.toString();
+    }
+
+}
+
+class EmptyTree extends Tree {
+
+    EmptyTree() {
+        super(null, null, null, null);
+    }
+
+    Tree insert(String key, Object binding) {
+        return new Tree(new EmptyTree(), key, binding, new EmptyTree());
+    }
 
 }
